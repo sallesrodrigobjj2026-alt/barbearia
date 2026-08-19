@@ -48,3 +48,5 @@
 - [x] Revalidar os oito carrosséis após a troca de imagens em desktop e mobile.
 - [x] Substituir a imagem ainda repetida da Pomada Matte Extra Forte e confirmar pares exclusivos nos quatro novos itens.
 - [x] Validar explicitamente o segundo slide dos quatro produtos novos e confirmar que seus pares visuais não se repetem.
+- [x] Corrigir o contraste do logotipo Corte & Navalha no tema escuro.
+- [x] Validar a legibilidade da marca nos temas claro e escuro em desktop e mobile.

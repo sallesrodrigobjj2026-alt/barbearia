@@ -88,12 +88,15 @@ const services = [
 ] as const;
 
 function Brand() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   return (
     <div className="flex items-center gap-2.5">
-      <div className="grid h-9 w-9 place-items-center overflow-hidden rounded-full border border-white/15 bg-[#1e1c19]">
-        <img src={logoImage} alt="Símbolo Corte & Navalha" className="h-full w-full object-cover" />
+      <div className={`relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full border ${isDark ? "border-[#f0eadc]/65 bg-[#090909] shadow-[0_0_0_2px_rgba(217,99,76,.18)]" : "border-[#211f1b]/50 bg-[#efe6d7]"}`}>
+        <img src={logoImage} alt="Símbolo Corte & Navalha" className={`absolute inset-0 h-full w-full object-cover ${isDark ? "opacity-75 brightness-150 contrast-150" : "opacity-85 brightness-110 contrast-125"}`} />
+        <span aria-hidden="true" className="relative h-[2px] w-6 rotate-[-30deg] bg-[#e56d54] shadow-[0_0_8px_rgba(217,99,76,.85)]" />
       </div>
-      <span className="display text-[1.55rem] leading-none tracking-[.06em] text-[#f0eadc]">
+      <span className={`display text-[1.55rem] leading-none tracking-[.06em] ${isDark ? "text-[#f0eadc]" : "text-[#211f1b]"}`}>
         Corte <span className="text-[#d9634c]">&amp;</span> Navalha
       </span>
     </div>
