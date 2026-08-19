@@ -50,4 +50,4 @@
 - [x] Validar explicitamente o segundo slide dos quatro produtos novos e confirmar que seus pares visuais não se repetem.
 - [x] Corrigir o contraste do logotipo Corte & Navalha no tema escuro.
 - [x] Validar a legibilidade da marca nos temas claro e escuro em desktop e mobile.
-- [ ] Vincular o projeto Corte & Navalha ao GitHub e exportar a versão atual para um repositório.
+- [x] Vincular o projeto Corte & Navalha ao repositório GitHub sallesrodrigobjj2026-alt/barbearia e exportar a versão atual.
