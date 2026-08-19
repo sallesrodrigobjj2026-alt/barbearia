@@ -23,12 +23,15 @@ import {
   LogIn,
   LogOut,
   ShieldCheck,
+  Moon,
+  Sun,
   UserRound,
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DEMO_SHOPIFY_ACCOUNT_URL, accountDisplayName, demoOrders, isValidDemoLogin } from "@/lib/demoAccount";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type TabId = "inicio" | "servicos" | "galeria" | "loja" | "conta";
 
@@ -78,6 +81,12 @@ function Brand() {
   );
 }
 
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
+  return <button onClick={toggleTheme} className="pressable grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-[#1e1c19] text-[#f0eadc] hover:border-[#d9634c]" aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"} title={isDark ? "Ativar tema claro" : "Ativar tema escuro"}>{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>;
+}
+
 function Header({ active, onChange }: { active: TabId; onChange: (tab: TabId) => void }) {
   const { itemCount, openCart } = useCart();
   const tabs: Array<[TabId, string]> = [["inicio", "Início"], ["servicos", "Serviços"], ["galeria", "Galeria"], ["loja", "Loja"], ["conta", "Conta"]];
@@ -88,7 +97,7 @@ function Header({ active, onChange }: { active: TabId; onChange: (tab: TabId) =>
         <nav className="hidden rounded-full border border-white/10 bg-white/[.035] p-1 lg:flex" aria-label="Navegação principal">
           {tabs.map(([id, label]) => <button key={id} onClick={() => onChange(id)} className={`pressable rounded-full px-5 py-2 text-xs font-bold uppercase tracking-[.13em] ${active === id ? "bg-[#f0eadc] text-[#1a1815]" : "text-[#b9b09e] hover:text-[#f0eadc]"}`}>{label}</button>)}
         </nav>
-        <div className="flex items-center gap-2"><button onClick={() => onChange("conta")} className={`pressable grid h-10 w-10 place-items-center rounded-full border bg-[#1e1c19] ${active === "conta" ? "border-[#d9634c] text-[#e56d54]" : "border-white/15 text-[#f0eadc] hover:border-[#d9634c]"}`} aria-label="Abrir conta"><UserRound size={18} /></button><button onClick={openCart} className="pressable relative grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-[#1e1c19] text-[#f0eadc] hover:border-[#d9634c]" aria-label={`Abrir carrinho, ${cartLabel(itemCount)}`}><ShoppingBag size={18} />{itemCount > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#d9634c] px-1 text-[9px] font-bold text-white">{itemCount}</span>}</button></div>
+        <div className="flex items-center gap-2"><ThemeToggle /><button onClick={() => onChange("conta")} className={`pressable grid h-10 w-10 place-items-center rounded-full border bg-[#1e1c19] ${active === "conta" ? "border-[#d9634c] text-[#e56d54]" : "border-white/15 text-[#f0eadc] hover:border-[#d9634c]"}`} aria-label="Abrir conta"><UserRound size={18} /></button><button onClick={openCart} className="pressable relative grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-[#1e1c19] text-[#f0eadc] hover:border-[#d9634c]" aria-label={`Abrir carrinho, ${cartLabel(itemCount)}`}><ShoppingBag size={18} />{itemCount > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#d9634c] px-1 text-[9px] font-bold text-white">{itemCount}</span>}</button></div>
       </div>
     </header>
   );
@@ -111,7 +120,7 @@ function Inicio({ navigate }: { navigate: (tab: TabId) => void }) {
   return (
     <main className="pb-24 lg:pb-0">
       <section className="grain relative isolate min-h-[calc(100svh-70px)] overflow-hidden border-b border-white/10 lg:min-h-[620px]">
-        <div className="absolute inset-0"><img src={heroImage} alt="Interior da Corte & Navalha" className="h-full w-full object-cover object-[64%_center] opacity-70" /><div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,17,15,.96)_0%,rgba(18,17,15,.79)_38%,rgba(18,17,15,.22)_80%)]" /></div>
+        <div className="absolute inset-0"><img src={heroImage} alt="Interior da Corte & Navalha" className="h-full w-full object-cover object-[64%_center] opacity-70" /><div className="hero-overlay absolute inset-0 bg-[linear-gradient(90deg,rgba(18,17,15,.96)_0%,rgba(18,17,15,.79)_38%,rgba(18,17,15,.22)_80%)]" /></div>
         <div className="relative z-10 mx-auto flex min-h-[calc(100svh-70px)] max-w-[1280px] flex-col justify-end px-4 pb-12 pt-16 sm:px-6 lg:min-h-[620px] lg:px-8 lg:pb-20">
           <div className="max-w-xl"><div className="fade-up inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.2em] text-[#e7ded0]"><span className="h-1.5 w-1.5 rounded-full bg-[#d9634c]" />Barbearia contemporânea</div><h1 className="fade-up delay-1 display mt-5 max-w-[11ch] text-[clamp(4.2rem,15vw,8.7rem)] leading-[.79] text-[#f4eee3]">A técnica mora no <span className="text-[#e0644c]">detalhe.</span></h1><p className="fade-up delay-2 mt-6 max-w-md text-sm leading-6 text-[#d1c7b7] sm:text-base">Cortes precisos, barba bem cuidada e produtos para manter o resultado quando você sai da cadeira.</p><div className="fade-up delay-2 mt-7 flex flex-wrap gap-3"><button onClick={() => navigate("servicos")} className="pressable inline-flex items-center gap-2 rounded-full bg-[#d9634c] px-5 py-3 text-sm font-bold text-white">Ver serviços <ArrowDownRight size={17} /></button><button onClick={() => navigate("loja")} className="pressable inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/10 px-5 py-3 text-sm font-bold text-[#f0eadc] hover:border-white/45">Produtos da casa <ArrowRight size={17} /></button></div></div>
           <div className="mt-10 flex max-w-xl items-center gap-4 border-t border-white/15 pt-4 text-[10px] font-bold uppercase tracking-[.15em] text-[#b6ad9e]"><span>Seu horário. Seu estilo.</span><span className="h-px flex-1 bg-white/15" /><span>Sem enrolação.</span></div>
@@ -179,6 +188,7 @@ function CartDrawer() {
 }
 
 export default function Home() {
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabId>(() => {
     const tab = new URLSearchParams(window.location.search).get("tab");
     return tab === "servicos" || tab === "galeria" || tab === "loja" || tab === "conta" ? tab : "inicio";
@@ -188,5 +198,5 @@ export default function Home() {
     window.history.replaceState(null, "", tab === "inicio" ? "/" : `/?tab=${tab}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  return <div className="min-h-screen bg-[#161513] text-[#f0eadc]"><Header active={activeTab} onChange={navigate} />{activeTab === "inicio" && <Inicio navigate={navigate} />}{activeTab === "servicos" && <Servicos navigate={navigate} />}{activeTab === "galeria" && <Galeria />}{activeTab === "loja" && <Loja />}{activeTab === "conta" && <Conta />}<footer className="border-t border-white/10 bg-[#12110f] px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-10"><div className="mx-auto flex max-w-[1280px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><Brand /><div className="text-sm leading-6 text-[#928878]"><p>© 2026 Corte & Navalha.</p><p>Técnica, presença e cuidado sem enrolação.</p></div></div></footer><MobileNav active={activeTab} onChange={navigate} /><CartDrawer /></div>;
+  return <div className={`site-shell theme-${theme} min-h-screen bg-[#161513] text-[#f0eadc]`}><Header active={activeTab} onChange={navigate} />{activeTab === "inicio" && <Inicio navigate={navigate} />}{activeTab === "servicos" && <Servicos navigate={navigate} />}{activeTab === "galeria" && <Galeria />}{activeTab === "loja" && <Loja />}{activeTab === "conta" && <Conta />}<footer className="border-t border-white/10 bg-[#12110f] px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-10"><div className="mx-auto flex max-w-[1280px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><Brand /><div className="text-sm leading-6 text-[#928878]"><p>© 2026 Corte & Navalha.</p><p>Técnica, presença e cuidado sem enrolação.</p></div></div></footer><MobileNav active={activeTab} onChange={navigate} /><CartDrawer /></div>;
 }

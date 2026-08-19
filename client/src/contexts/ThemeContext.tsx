@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark";
+export type Theme = "light" | "dark";
+
+export function resolveTheme(storedTheme: unknown, fallback: Theme = "dark"): Theme {
+  return storedTheme === "light" || storedTheme === "dark" ? storedTheme : fallback;
+}
 
 interface ThemeContextType {
   theme: Theme;
@@ -24,7 +28,8 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(() => {
     if (switchable) {
       const stored = localStorage.getItem("theme");
-      return (stored as Theme) || defaultTheme;
+      const previewTheme = new URLSearchParams(window.location.search).get("theme");
+      return resolveTheme(previewTheme ?? stored, defaultTheme);
     }
     return defaultTheme;
   });
@@ -33,8 +38,10 @@ export function ThemeProvider({
     const root = document.documentElement;
     if (theme === "dark") {
       root.classList.add("dark");
+      root.classList.remove("light");
     } else {
       root.classList.remove("dark");
+      root.classList.add("light");
     }
 
     if (switchable) {

@@ -30,3 +30,11 @@
 - [x] Redirecionar o botão de rastreio de cada pedido ao link de status da Shopify, sem apresentar etapas internas de entrega.
 - [x] Validar explicitamente login inválido, bloqueio do painel sem sessão e retorno aos estados conectado e desconectado.
 - [x] Ajustar o CTA de rastreio para deixar claro que, na demonstração, a abertura direciona para a conta geral da Shopify e não para um status individual de pedido.
+- [x] Adicionar seletor de tema claro e escuro à interface mobile e desktop.
+- [x] Preservar a escolha de tema no navegador e validar contraste em ambas as versões.
+- [x] Substituir a inversão visual provisória por cores reais do tema claro em superfícies, textos e bordas.
+- [x] Validar contraste em tema claro e escuro nas abas, no carrinho, em CTAs e nos overlays em desktop e mobile.
+- [x] Validar visualmente os estados críticos do tema escuro após os ajustes finais.
+- [x] Registrar a validação separada de tema claro e escuro em desktop e mobile, incluindo carrinho e overlay.
+- [x] Corrigir contraste das legendas sobre imagens e do rótulo de demonstração no tema claro.
+- [x] Validar overlay da Galeria e drawer do carrinho no tema escuro, com registro separado dos estados críticos.
