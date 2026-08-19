@@ -46,7 +46,7 @@ button:not(:disabled), a[href] { cursor: pointer; }
 button:focus-visible, a:focus-visible { outline: 2px solid #e46b51; outline-offset: 4px; }
 .grain::before { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .14; content: ""; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E"); }
 .display { font-family: "Bebas Neue", sans-serif; letter-spacing: .025em; }
-.pressable { transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 160ms ease, color 160ms ease, border-color 160ms ease; }
+.pressable { transition: transform 110ms cubic-bezier(.23,1,.32,1), background-color 110ms ease, color 110ms ease, border-color 110ms ease; touch-action: manipulation; }
 .pressable:active { transform: scale(.97); }
 .fade-up { animation: fade-up 520ms cubic-bezier(.23,1,.32,1) both; }
 .delay-1 { animation-delay: 70ms; }

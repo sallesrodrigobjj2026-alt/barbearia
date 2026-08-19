@@ -1,6 +1,7 @@
 import { useCart } from "@/contexts/CartContext";
 import { trpc } from "@/lib/trpc";
 import { canAddToCart, cartLabel, formatBRL } from "@/lib/storefront";
+import { cardImages } from "@/lib/productVisuals";
 import type { CartItem, Product } from "@shared/commerce/types";
 import {
   ArrowDownRight,
@@ -58,6 +59,24 @@ const productFallbacks = [
   ["/manus-storage/shampoo-corte-navalha-1_afd88b9b.jpg", "/manus-storage/shampoo-corte-navalha-2_b0b9b71d.jpg"],
   ["/manus-storage/kit-pente-corte-navalha-1_6dfa6a85.jpg", "/manus-storage/kit-pente-corte-navalha-2_5a1015ab.jpg"],
 ];
+const productImageOverrides: Record<string, string[]> = {
+  "serum-para-barba-corte-navalha": [
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/PGiOmoFXSHSSGmrT.jpg",
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/thIzZzdHtIlhSITL.jpg",
+  ],
+  "shampoo-reparador-corte-navalha": [
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/SjTmKgQdKqCHeJVQ.jpg",
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/pxjCrDVBFJMTKmjy.jpg",
+  ],
+  "pomada-matte-extra-forte-corte-navalha": [
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/WAQKjhpPsnlbkeJx.jpg",
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/uCeaORDASpAnpmuA.jpg",
+  ],
+  "pente-acetato-fino-corte-navalha": [
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/QlHjEMzSSjTOBjQn.jpg",
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663902048436/onAaUGGyZWxYjjFU.jpg",
+  ],
+};
 const demoAddress = "Rua da Navalha, 245 — Vila Madalena, São Paulo — SP";
 const demoMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(demoAddress)}`;
 const demoWhatsAppUrl = `https://wa.me/5511999999999?text=${encodeURIComponent("Olá! Quero agendar um horário na Corte & Navalha.")}`;
@@ -138,13 +157,15 @@ function Servicos({ navigate }: { navigate: (tab: TabId) => void }) {
 }
 
 function ProductCard({ product, index }: { product: Product; index: number }) {
-  const { addItem, loading } = useCart();
+  const { addItem, isAdding } = useCart();
   const [imageIndex, setImageIndex] = useState(0);
-  const images = product.images.length > 1 ? product.images.map(image => image.url) : [...product.images.map(image => image.url), ...productFallbacks[index % productFallbacks.length]].slice(0, 2);
+  const overrideImages = productImageOverrides[product.handle];
+  const images = cardImages(product.handle, product.images.map(image => image.url), overrideImages ? { [product.handle]: overrideImages } : {}, productFallbacks[index % productFallbacks.length]);
   const selectedImage = images[imageIndex] || productFallbacks[index % productFallbacks.length][0];
   const variant = product.variants[0];
+  const addingThisItem = Boolean(variant && isAdding(variant.id));
   const changeImage = (offset: number) => setImageIndex(current => (current + offset + images.length) % images.length);
-  return <article className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#201e1a]"><div className="group relative aspect-square overflow-hidden bg-[#292620]"><img src={selectedImage} alt={`${product.title} — foto ${imageIndex + 1}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" />{images.length > 1 && <><button onClick={() => changeImage(-1)} aria-label="Foto anterior" className="pressable absolute left-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/35 text-white"><ChevronLeft size={18} /></button><button onClick={() => changeImage(1)} aria-label="Próxima foto" className="pressable absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/35 text-white"><ChevronRight size={18} /></button><div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">{images.map((_, dot) => <span key={dot} className={`h-1.5 rounded-full ${imageIndex === dot ? "w-5 bg-[#e9e0d0]" : "w-1.5 bg-white/40"}`} />)}</div></>}</div><div className="p-5"><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#d9634c]">{product.productType || "Cuidado"}</p><div className="mt-2 flex gap-3"><h3 className="display min-w-0 flex-1 text-3xl leading-none">{product.title}</h3><span className="display whitespace-nowrap text-2xl leading-none text-[#e56d54]">{formatBRL(product.priceRange.min.amount)}</span></div><p className="mt-3 min-h-10 text-sm leading-5 text-[#b8ae9f]">{product.description || "Seleção da Corte & Navalha para o seu ritual diário."}</p><button disabled={!variant || !canAddToCart(variant.availableForSale, loading)} onClick={() => variant && addItem(variant.id).catch(() => toast.error("Não foi possível adicionar este item agora."))} className="pressable mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e9e0d0] px-4 py-3 text-xs font-bold text-[#1e1b17] hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"><Plus size={16} />{loading ? "Adicionando..." : variant?.availableForSale ? "Adicionar à bolsa" : "Indisponível"}</button></div></article>;
+  return <article className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#201e1a]"><div className="group relative aspect-square overflow-hidden bg-[#292620]"><img src={selectedImage} alt={`${product.title} — foto ${imageIndex + 1}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" />{images.length > 1 && <><button onClick={() => changeImage(-1)} aria-label="Foto anterior" className="pressable absolute left-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/35 text-white"><ChevronLeft size={18} /></button><button onClick={() => changeImage(1)} aria-label="Próxima foto" className="pressable absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/35 text-white"><ChevronRight size={18} /></button><div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">{images.map((_, dot) => <span key={dot} className={`h-1.5 rounded-full ${imageIndex === dot ? "w-5 bg-[#e9e0d0]" : "w-1.5 bg-white/40"}`} />)}</div></>}</div><div className="p-5"><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#d9634c]">{product.productType || "Cuidado"}</p><div className="mt-2 flex gap-3"><h3 className="display min-w-0 flex-1 text-3xl leading-none">{product.title}</h3><span className="display whitespace-nowrap text-2xl leading-none text-[#e56d54]">{formatBRL(product.priceRange.min.amount)}</span></div><p className="mt-3 min-h-10 text-sm leading-5 text-[#b8ae9f]">{product.description || "Seleção da Corte & Navalha para o seu ritual diário."}</p><button disabled={!variant || !canAddToCart(variant.availableForSale, addingThisItem)} onClick={() => variant && addItem(variant.id).catch(() => toast.error("Não foi possível adicionar este item agora."))} className="pressable mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e9e0d0] px-4 py-3 text-xs font-bold text-[#1e1b17] hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"><Plus size={16} />{addingThisItem ? "Adicionado à bolsa" : variant?.availableForSale ? "Adicionar à bolsa" : "Indisponível"}</button></div></article>;
 }
 
 function Galeria() {
@@ -171,7 +192,7 @@ function Conta() {
 }
 
 function Loja() {
-  const input = useMemo(() => ({ first: 6 }), []);
+  const input = useMemo(() => ({ first: 8 }), []);
   const { data: products = [], isLoading, isError } = trpc.commerce.products.list.useQuery(input);
   return <main className="mx-auto min-h-[calc(100svh-70px)] max-w-[1280px] px-4 pb-24 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-20"><div className="grid gap-8 border-b border-white/10 pb-9 lg:grid-cols-[.85fr_1.15fr] lg:items-end"><div><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">Produtos da barbearia</p><h1 className="display mt-4 text-[clamp(4rem,9vw,7.5rem)] leading-[.8]">O ritual continua <span className="text-[#d9634c]">em casa.</span></h1></div><p className="max-w-lg text-sm leading-6 text-[#bdb3a2]">Fórmulas e ferramentas escolhidas para você manter textura, hidratação e acabamento entre uma visita e outra.</p></div><section className="pt-10">{isLoading && <div className="grid gap-4 sm:grid-cols-2"><div className="aspect-square animate-pulse rounded-[1.4rem] bg-white/7" /><div className="aspect-square animate-pulse rounded-[1.4rem] bg-white/7" /></div>}{isError && <div className="rounded-[1.4rem] border border-[#d9634c]/30 bg-[#d9634c]/10 p-7"><p className="display text-3xl">A vitrine está sendo preparada.</p><p className="mt-2 text-sm leading-6 text-[#cdbcb2]">Atualize a página em instantes. O catálogo volta assim que a loja concluir a conexão.</p></div>}{!isLoading && !isError && products.length === 0 && <div className="rounded-[1.4rem] border border-white/10 bg-[#201e1a] p-7"><Package size={24} className="text-[#d9634c]" /><p className="display mt-5 text-3xl">Catálogo chegando.</p><p className="mt-2 max-w-sm text-sm leading-6 text-[#b9af9f]">Os primeiros itens estão sendo organizados na vitrine. Volte em breve.</p></div>}{products.length > 0 && <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{products.map((product, index) => <ProductCard product={product} index={index} key={product.id} />)}</div>}</section></main>;
 }
@@ -182,9 +203,9 @@ function CartItemRow({ item }: { item: CartItem }) {
 }
 
 function CartDrawer() {
-  const { cart, closeCart, isOpen, itemCount, loading, proceedToCheckout } = useCart();
+  const { cart, closeCart, isOpen, itemCount, loading, pendingAdds, proceedToCheckout } = useCart();
   if (!isOpen) return null;
-  return <div className="fixed inset-0 z-50"><button aria-label="Fechar carrinho" onClick={closeCart} className="absolute inset-0 bg-black/65 backdrop-blur-[2px]" /><aside role="dialog" aria-modal="true" aria-label="Sua bolsa" className="absolute inset-x-0 bottom-0 flex max-h-[86svh] flex-col rounded-t-[1.7rem] border border-white/10 bg-[#1e1c19] sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[430px] sm:rounded-l-[1.7rem] sm:rounded-tr-none"><div className="flex items-center justify-between border-b border-white/10 px-5 py-5"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#d9634c]">Sua seleção</p><h2 className="display mt-1 text-4xl leading-none">Bolsa <span className="text-[#d9634c]">/ {itemCount}</span></h2></div><button onClick={closeCart} aria-label="Fechar" className="pressable grid h-10 w-10 place-items-center rounded-full border border-white/15"><X size={19} /></button></div><div className="min-h-0 flex-1 overflow-y-auto px-5"><ul>{cart?.items.map(item => <CartItemRow item={item} key={item.lineId} />)}</ul>{!cart?.items.length && <div className="flex min-h-64 flex-col items-center justify-center text-center"><div className="grid h-14 w-14 place-items-center rounded-full bg-[#d9634c]/12 text-[#e56d54]"><ShoppingBag size={23} /></div><p className="display mt-5 text-3xl">Sua bolsa está leve.</p><p className="mt-2 max-w-[240px] text-sm leading-6 text-[#aaa091]">Escolha um produto da casa para levar o cuidado com você.</p></div>}</div><div className="border-t border-white/10 p-5"><div className="flex items-center justify-between"><span className="text-sm text-[#b9af9f]">Subtotal</span><strong className="display text-3xl">{cart ? formatBRL(cart.subtotal.amount) : formatBRL(0)}</strong></div><button disabled={!itemCount || loading} onClick={proceedToCheckout} className="pressable mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#d9634c] px-5 py-3.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">{loading ? "Atualizando..." : "Continuar para pagamento"}<ArrowRight size={17} /></button><p className="mt-3 text-center text-[10px] leading-4 text-[#82796e]">Você conclui o pagamento no ambiente seguro da loja.</p></div></aside></div>;
+  return <div className="fixed inset-0 z-50"><button aria-label="Fechar carrinho" onClick={closeCart} className="absolute inset-0 bg-black/65 backdrop-blur-[2px]" /><aside role="dialog" aria-modal="true" aria-label="Sua bolsa" className="absolute inset-x-0 bottom-0 flex max-h-[86svh] flex-col rounded-t-[1.7rem] border border-white/10 bg-[#1e1c19] sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[430px] sm:rounded-l-[1.7rem] sm:rounded-tr-none"><div className="flex items-center justify-between border-b border-white/10 px-5 py-5"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#d9634c]">Sua seleção</p><h2 className="display mt-1 text-4xl leading-none">Bolsa <span className="text-[#d9634c]">/ {itemCount}</span></h2></div><button onClick={closeCart} aria-label="Fechar" className="pressable grid h-10 w-10 place-items-center rounded-full border border-white/15"><X size={19} /></button></div><div className="min-h-0 flex-1 overflow-y-auto px-5">{pendingAdds > 0 && <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#d9634c]/25 bg-[#d9634c]/8 px-3 py-2 text-xs font-bold text-[#e56d54]"><span className="h-2 w-2 animate-pulse rounded-full bg-current" />Adicionando {pendingAdds} item{pendingAdds > 1 ? "s" : ""} à bolsa...</div>}<ul>{cart?.items.map(item => <CartItemRow item={item} key={item.lineId} />)}</ul>{!cart?.items.length && !pendingAdds && <div className="flex min-h-64 flex-col items-center justify-center text-center"><div className="grid h-14 w-14 place-items-center rounded-full bg-[#d9634c]/12 text-[#e56d54]"><ShoppingBag size={23} /></div><p className="display mt-5 text-3xl">Sua bolsa está leve.</p><p className="mt-2 max-w-[240px] text-sm leading-6 text-[#aaa091]">Escolha um produto da casa para levar o cuidado com você.</p></div>}</div><div className="border-t border-white/10 p-5"><div className="flex items-center justify-between"><span className="text-sm text-[#b9af9f]">Subtotal</span><strong className="display text-3xl">{cart ? formatBRL(cart.subtotal.amount) : formatBRL(0)}</strong></div><button disabled={!cart?.items.length || loading} onClick={proceedToCheckout} className="pressable mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#d9634c] px-5 py-3.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">{loading ? "Atualizando..." : "Continuar para pagamento"}<ArrowRight size={17} /></button><p className="mt-3 text-center text-[10px] leading-4 text-[#82796e]">Você conclui o pagamento no ambiente seguro da loja.</p></div></aside></div>;
 }
 
 export default function Home() {
@@ -196,7 +217,7 @@ export default function Home() {
   const navigate = (tab: TabId) => {
     setActiveTab(tab);
     window.history.replaceState(null, "", tab === "inicio" ? "/" : `/?tab=${tab}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0 });
   };
   return <div className={`site-shell theme-${theme} min-h-screen bg-[#161513] text-[#f0eadc]`}><Header active={activeTab} onChange={navigate} />{activeTab === "inicio" && <Inicio navigate={navigate} />}{activeTab === "servicos" && <Servicos navigate={navigate} />}{activeTab === "galeria" && <Galeria />}{activeTab === "loja" && <Loja />}{activeTab === "conta" && <Conta />}<footer className="border-t border-white/10 bg-[#12110f] px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-10"><div className="mx-auto flex max-w-[1280px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><Brand /><div className="text-sm leading-6 text-[#928878]"><p>© 2026 Corte & Navalha.</p><p>Técnica, presença e cuidado sem enrolação.</p></div></div></footer><MobileNav active={activeTab} onChange={navigate} /><CartDrawer /></div>;
 }

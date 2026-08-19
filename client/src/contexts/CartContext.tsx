@@ -10,17 +10,11 @@ import {
   useState,
 } from "react";
 
-/**
- * Storefront cart context.
- *
- * - Talks ONLY to backend-agnostic `commerce.*` tRPC procedures.
- * - Persists the cart id in localStorage and rehydrates on mount.
- * - Exposes a tiny imperative surface to UI: addItem, updateQuantity,
- *   removeItem, openCart, proceedToCheckout. Everything is typed against
- *   `shared/commerce/types` — the Shopify backend is invisible.
- */
-
 const CART_STORAGE_KEY = "commerce:cart-id";
+
+export function totalPendingItems(pendingLines: Record<string, number>) {
+  return Object.values(pendingLines).reduce((total, quantity) => total + quantity, 0);
+}
 
 function readStoredCartId(): string | null {
   if (typeof window === "undefined") return null;
@@ -38,6 +32,8 @@ type CartContextValue = {
   isOpen: boolean;
   loading: boolean;
   itemCount: number;
+  pendingAdds: number;
+  isAdding: (variantId: string) => boolean;
   openCart: () => void;
   closeCart: () => void;
   addItem: (variantId: string, quantity?: number) => Promise<void>;
@@ -54,10 +50,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<Cart | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [pendingLines, setPendingLines] = useState<Record<string, number>>({});
   const utils = trpc.useUtils();
 
-  // Re-hydrate cart on mount or whenever cartId changes.
   useEffect(() => {
     if (!cartId) {
       setCart(null);
@@ -67,11 +62,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     utils.commerce.cart.get
       .fetch({ cartId })
-      .then(c => {
+      .then(nextCart => {
         if (cancelled) return;
-        if (c) setCart(c);
+        if (nextCart) setCart(nextCart);
         else {
-          // Stored cart id no longer valid — drop it.
           writeStoredCartId(null);
           setCartId(null);
         }
@@ -89,13 +83,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [cartId, utils.commerce.cart.get]);
 
-  const itemCount = cart?.itemCount ?? 0;
-
+  const pendingAdds = totalPendingItems(pendingLines);
+  const itemCount = (cart?.itemCount ?? 0) + pendingAdds;
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
+  const isAdding = useCallback((variantId: string) => Boolean(pendingLines[variantId]), [pendingLines]);
 
   const addItem = useCallback(
     async (variantId: string, quantity: number = 1) => {
+      setPendingLines(current => ({ ...current, [variantId]: (current[variantId] ?? 0) + quantity }));
+      setIsOpen(true);
       setLoading(true);
       try {
         if (!cartId || !cart) {
@@ -112,8 +109,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
           });
           setCart(updated);
         }
-        setIsOpen(true);
       } finally {
+        setPendingLines(current => {
+          const next = { ...current };
+          const remaining = (next[variantId] ?? quantity) - quantity;
+          if (remaining > 0) next[variantId] = remaining;
+          else delete next[variantId];
+          return next;
+        });
         setLoading(false);
       }
     },
@@ -162,7 +165,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const proceedToCheckout = useCallback(() => {
     if (!cart?.checkoutUrl) return;
-    // checkoutUrl already has channel=online_store appended server-side.
     window.open(cart.checkoutUrl, "_blank", "noopener,noreferrer");
   }, [cart]);
 
@@ -172,6 +174,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       isOpen,
       loading,
       itemCount,
+      pendingAdds,
+      isAdding,
       openCart,
       closeCart,
       addItem,
@@ -185,6 +189,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       isOpen,
       loading,
       itemCount,
+      pendingAdds,
+      isAdding,
       openCart,
       closeCart,
       addItem,

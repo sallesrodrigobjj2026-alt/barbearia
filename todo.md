@@ -38,3 +38,13 @@
 - [x] Registrar a validação separada de tema claro e escuro em desktop e mobile, incluindo carrinho e overlay.
 - [x] Corrigir contraste das legendas sobre imagens e do rótulo de demonstração no tema claro.
 - [x] Validar overlay da Galeria e drawer do carrinho no tema escuro, com registro separado dos estados críticos.
+- [x] Adicionar ao menos quatro produtos novos ao catálogo Shopify para totalizar oito itens na loja.
+- [x] Preparar imagens consistentes para os novos produtos e seus mini carrosséis.
+- [x] Otimizar o feedback imediato de cliques em navegação, adicionar à bolsa e abertura do carrinho.
+- [x] Validar os oito produtos e a resposta visual das ações em desktop e mobile.
+- [x] Associar imagens específicas e coerentes aos quatro produtos novos, preservando dois ângulos por mini carrossel.
+- [x] Validar a Loja expandida e a abertura imediata da bolsa em desktop, registrando as evidências separadamente.
+- [x] Substituir as fotos reutilizadas por pares visuais distintos para os quatro produtos adicionados na expansão final.
+- [x] Revalidar os oito carrosséis após a troca de imagens em desktop e mobile.
+- [x] Substituir a imagem ainda repetida da Pomada Matte Extra Forte e confirmar pares exclusivos nos quatro novos itens.
+- [x] Validar explicitamente o segundo slide dos quatro produtos novos e confirmar que seus pares visuais não se repetem.
