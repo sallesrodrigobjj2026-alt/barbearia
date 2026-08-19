@@ -13,6 +13,6 @@
 - [x] Criar estados de carregamento e vazio para o catálogo, sem avaliações ou depoimentos fabricados.
 - [x] Escrever testes unitários para as funções de cálculo e apresentação comercial da vitrine.
 - [x] Validar responsividade mobile/desktop, build e console do navegador.
-- [ ] Adicionar endereço/localização real da barbearia e link funcional de rota; substituir mensagens provisórias da aba Início por ações reais.
-- [ ] Adicionar número de contato/WhatsApp real e conectar os CTAs de reserva/agendamento a links funcionais.
+- [x] Adicionar endereço/localização real da barbearia e link funcional de rota; substituído por endereço fictício explícito a pedido do usuário para demonstração.
+- [x] Adicionar número de contato/WhatsApp real e conectar os CTAs de reserva/agendamento a links funcionais; substituído por número fictício explícito a pedido do usuário para demonstração.
 - [x] Configurar dados fictícios explícitos de endereço e WhatsApp para demonstrar os fluxos de rota e agendamento.
