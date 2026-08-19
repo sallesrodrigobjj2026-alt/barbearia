@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock3,
+  Images,
   MapPin,
   Minus,
   Package,
@@ -23,7 +24,7 @@ import {
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-type TabId = "inicio" | "servicos" | "loja";
+type TabId = "inicio" | "servicos" | "galeria" | "loja";
 
 const heroImage = "/manus-storage/corte-e-navalha-hero_b322c0e4.jpg";
 const logoImage = "/manus-storage/corte-e-navalha-logo_3c585a61.png";
@@ -32,9 +33,21 @@ const galleryImages = [
   "/manus-storage/corte-e-navalha-cadeira_69d912e2.jpg",
   "/manus-storage/corte-e-navalha-fachada_db8fba0f.jpg",
 ];
+const editorialGallery = [
+  { src: "/manus-storage/galeria-corte-degrade_ac931c8c.jpg", title: "Degradê preciso", type: "Cortes" },
+  { src: "/manus-storage/galeria-corte-social_8c5146ba.jpg", title: "Social texturizado", type: "Cortes" },
+  { src: "/manus-storage/galeria-barba_2558901f.jpg", title: "Linha de barba", type: "Barba" },
+  { src: "/manus-storage/galeria-finalizacao_e1f3c3aa.jpg", title: "Finalização", type: "Cortes" },
+  { src: "/manus-storage/galeria-espelho_986c8588.jpg", title: "Luz e reflexo", type: "Espaço" },
+  { src: "/manus-storage/corte-e-navalha-bancada_08d2f095.jpg", title: "Bancada", type: "Espaço" },
+  { src: "/manus-storage/corte-e-navalha-cadeira_69d912e2.jpg", title: "A cadeira", type: "Espaço" },
+  { src: "/manus-storage/corte-e-navalha-fachada_db8fba0f.jpg", title: "Chegada", type: "Espaço" },
+];
 const productFallbacks = [
   ["/manus-storage/pomada-corte-navalha-1_6e988e6e.jpg", "/manus-storage/pomada-corte-navalha-2_580ca111.jpg"],
   ["/manus-storage/oleo-corte-navalha-1_5a50b96c.jpg", "/manus-storage/oleo-corte-navalha-2_a35cbc86.jpg"],
+  ["/manus-storage/shampoo-corte-navalha-1_afd88b9b.jpg", "/manus-storage/shampoo-corte-navalha-2_b0b9b71d.jpg"],
+  ["/manus-storage/kit-pente-corte-navalha-1_6dfa6a85.jpg", "/manus-storage/kit-pente-corte-navalha-2_5a1015ab.jpg"],
 ];
 const demoAddress = "Rua da Navalha, 245 — Vila Madalena, São Paulo — SP";
 const demoMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(demoAddress)}`;
@@ -61,7 +74,7 @@ function Brand() {
 
 function Header({ active, onChange }: { active: TabId; onChange: (tab: TabId) => void }) {
   const { itemCount, openCart } = useCart();
-  const tabs: Array<[TabId, string]> = [["inicio", "Início"], ["servicos", "Serviços"], ["loja", "Loja"]];
+  const tabs: Array<[TabId, string]> = [["inicio", "Início"], ["servicos", "Serviços"], ["galeria", "Galeria"], ["loja", "Loja"]];
   return (
     <header className="sticky top-0 z-30 border-b border-white/8 bg-[#161513]/90 backdrop-blur-xl">
       <div className="mx-auto flex h-[70px] max-w-[1280px] items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -79,12 +92,12 @@ function Header({ active, onChange }: { active: TabId; onChange: (tab: TabId) =>
 
 function MobileNav({ active, onChange }: { active: TabId; onChange: (tab: TabId) => void }) {
   const { itemCount, openCart } = useCart();
-  const tabs: Array<[TabId, string, typeof Sparkles]> = [["inicio", "Início", Sparkles], ["servicos", "Serviços", Scissors], ["loja", "Loja", ShoppingBag]];
+  const tabs: Array<[TabId, string, typeof Sparkles]> = [["inicio", "Início", Sparkles], ["servicos", "Serviços", Scissors], ["galeria", "Galeria", Images], ["loja", "Loja", ShoppingBag]];
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#1a1815]/95 px-2 pb-[max(.55rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl lg:hidden" aria-label="Navegação móvel">
       <div className="mx-auto flex max-w-md justify-around">
-        {tabs.map(([id, label, Icon]) => <button key={id} onClick={() => onChange(id)} className={`pressable flex min-w-[72px] flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] font-bold ${active === id ? "text-[#e56d54]" : "text-[#a89f90]"}`}><Icon size={19} /><span>{label}</span></button>)}
-        <button onClick={openCart} className="pressable relative flex min-w-[72px] flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] font-bold text-[#a89f90]" aria-label={`Abrir carrinho, ${cartLabel(itemCount)}`}><ShoppingBag size={19} /><span>Bolsa</span>{itemCount > 0 && <span className="absolute right-3 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-[#d9634c] px-1 text-[9px] text-white">{itemCount}</span>}</button>
+        {tabs.map(([id, label, Icon]) => <button key={id} onClick={() => onChange(id)} className={`pressable flex min-w-[60px] flex-col items-center gap-1 rounded-xl px-1.5 py-1.5 text-[9px] font-bold ${active === id ? "text-[#e56d54]" : "text-[#a89f90]"}`}><Icon size={18} /><span>{label}</span></button>)}
+        <button onClick={openCart} className="pressable relative flex min-w-[60px] flex-col items-center gap-1 rounded-xl px-1.5 py-1.5 text-[9px] font-bold text-[#a89f90]" aria-label={`Abrir carrinho, ${cartLabel(itemCount)}`}><ShoppingBag size={18} /><span>Bolsa</span>{itemCount > 0 && <span className="absolute right-2 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-[#d9634c] px-1 text-[9px] text-white">{itemCount}</span>}</button>
       </div>
     </nav>
   );
@@ -101,7 +114,7 @@ function Inicio({ navigate }: { navigate: (tab: TabId) => void }) {
         </div>
       </section>
       <section className="mx-auto max-w-[1280px] px-4 py-14 sm:px-6 lg:px-8 lg:py-20"><div className="cut-rule mb-8" /><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">A experiência</p><h2 className="display mt-3 text-[clamp(2.7rem,7vw,4.4rem)] leading-[.88]">Cuidado que aparece.</h2><div className="mt-7 grid gap-3 md:grid-cols-3">{[[Scissors, "Corte com intenção", "Caimento pensado para o seu tipo de cabelo, rotina e presença."], [Sparkles, "Ritual de barba", "Toalha quente, navalha e acabamento que respeita o seu rosto."], [Package, "Leve o resultado", "Produtos selecionados para o cuidado continuar em casa."]].map(([Icon, title, text], index) => { const CardIcon = Icon as typeof Scissors; return <article className={`rounded-[.8rem] border border-white/10 p-6 ${index === 1 ? "bg-[#e9e0d0] text-[#1c1a16]" : "bg-[#201e1a]"}`} key={String(title)}><CardIcon size={25} className={index === 1 ? "text-[#c84e38]" : "text-[#e16a53]"} /><p className={`mt-8 text-[10px] font-bold uppercase tracking-[.19em] ${index === 1 ? "text-[#766c5f]" : "text-[#aca291]"}`}>0{index + 1}</p><h3 className="display mt-2 text-3xl leading-none">{String(title)}</h3><p className={`mt-3 text-sm leading-6 ${index === 1 ? "text-[#5d564c]" : "text-[#b9b09e]"}`}>{String(text)}</p></article>; })}</div></section>
-      <section className="border-y border-white/10 bg-[#1c1a17] py-14 lg:py-20"><div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8"><div className="cut-rule mb-8" /><div className="flex items-end justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">O espaço</p><h2 className="display mt-3 text-[clamp(2.7rem,7vw,4.4rem)] leading-[.88]">Feito para desacelerar.</h2></div><span className="hidden text-xs font-bold uppercase tracking-[.15em] text-[#aa9f91] sm:block">Passe para ver</span></div><div className="mt-7 flex gap-3 overflow-x-auto pb-3 [scrollbar-width:none] sm:grid sm:grid-cols-3 sm:overflow-visible">{galleryImages.map((source, index) => <figure className={`relative h-[330px] min-w-[245px] overflow-hidden rounded-[.8rem] border border-white/10 sm:h-[410px] sm:min-w-0 ${index === 1 ? "sm:translate-y-8" : ""}`} key={source}><img src={source} alt={["Detalhes da bancada", "Cadeira de barbeiro", "Fachada da Corte & Navalha"][index]} className="h-full w-full object-cover" /><figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 pb-4 pt-12 text-[10px] font-bold uppercase tracking-[.2em] text-[#e7ded0]">0{index + 1} / {index === 0 ? "Detalhes" : index === 1 ? "Cadeira" : "Chegada"}</figcaption></figure>)}</div></div></section>
+      <section className="border-y border-white/10 bg-[#1c1a17] py-14 lg:py-20"><div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8"><div className="cut-rule mb-8" /><div className="flex items-end justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">O espaço</p><h2 className="display mt-3 text-[clamp(2.7rem,7vw,4.4rem)] leading-[.88]">Feito para desacelerar.</h2></div><button onClick={() => navigate("galeria")} className="pressable hidden text-xs font-bold uppercase tracking-[.15em] text-[#e7ded0] underline decoration-[#d9634c] underline-offset-8 sm:block">Ver galeria</button></div><div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-3">{galleryImages.map((source, index) => <figure className="relative aspect-[4/5] min-w-0 overflow-hidden rounded-[.8rem] border border-white/10" key={source}><img src={source} alt={["Detalhes da bancada", "Cadeira de barbeiro", "Fachada da Corte & Navalha"][index]} className="h-full w-full object-cover transition duration-500 hover:scale-105" /><figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 pb-4 pt-12 text-[10px] font-bold uppercase tracking-[.2em] text-[#e7ded0]">0{index + 1} / {index === 0 ? "Detalhes" : index === 1 ? "Cadeira" : "Chegada"}</figcaption></figure>)}</div></div></section>
       <section className="mx-auto grid max-w-[1280px] gap-5 px-4 py-14 sm:px-6 md:grid-cols-[1.1fr_.9fr] lg:px-8 lg:py-24"><div className="rounded-[.8rem] bg-[#e9e0d0] p-7 text-[#211f1b] sm:p-9"><p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#9e3d2c]">Onde estamos <span className="ml-1 text-[#6b6258]">/ demonstração</span></p><h2 className="display mt-3 max-w-[9ch] text-[3.2rem] leading-[.86]">Perto do seu próximo corte.</h2><p className="mt-5 max-w-sm text-sm leading-6 text-[#655d53]">{demoAddress}. Dados fictícios para demonstrar o acesso à rota e ao agendamento em um toque.</p><div className="mt-7 flex flex-wrap gap-3"><a href={demoMapsUrl} target="_blank" rel="noreferrer" className="pressable inline-flex items-center gap-2 rounded-full bg-[#211f1b] px-4 py-2.5 text-xs font-bold text-[#f0eadc]"><MapPin size={16} />Ver rota</a><a href={demoWhatsAppUrl} target="_blank" rel="noreferrer" className="pressable inline-flex items-center gap-2 rounded-full border border-[#211f1b]/20 px-4 py-2.5 text-xs font-bold"><Phone size={16} />Falar no WhatsApp</a></div></div><div className="relative min-h-[290px] overflow-hidden rounded-[.8rem] border border-white/10 bg-[#22201c] p-7"><div className="absolute -right-14 -top-10 h-56 w-56 rounded-full border-[22px] border-[#d9634c]/20" /><div className="relative z-10 flex h-full flex-col justify-between"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#d9634c] text-white"><MapPin size={19} /></div><div><p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#aea493]">Endereço de demonstração</p><p className="display mt-2 text-4xl leading-none">Rua da Navalha,<br />245 · São Paulo.</p><div className="mt-5 flex items-center gap-2 text-xs text-[#bcb2a1]"><Clock3 size={15} />Ter–Sáb · 09h às 20h</div></div></div></div></section>
     </main>
   );
@@ -119,6 +132,12 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
   const variant = product.variants[0];
   const changeImage = (offset: number) => setImageIndex(current => (current + offset + images.length) % images.length);
   return <article className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#201e1a]"><div className="group relative aspect-square overflow-hidden bg-[#292620]"><img src={selectedImage} alt={`${product.title} — foto ${imageIndex + 1}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" />{images.length > 1 && <><button onClick={() => changeImage(-1)} aria-label="Foto anterior" className="pressable absolute left-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/35 text-white"><ChevronLeft size={18} /></button><button onClick={() => changeImage(1)} aria-label="Próxima foto" className="pressable absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/35 text-white"><ChevronRight size={18} /></button><div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">{images.map((_, dot) => <span key={dot} className={`h-1.5 rounded-full ${imageIndex === dot ? "w-5 bg-[#e9e0d0]" : "w-1.5 bg-white/40"}`} />)}</div></>}</div><div className="p-5"><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#d9634c]">{product.productType || "Cuidado"}</p><div className="mt-2 flex gap-3"><h3 className="display min-w-0 flex-1 text-3xl leading-none">{product.title}</h3><span className="display whitespace-nowrap text-2xl leading-none text-[#e56d54]">{formatBRL(product.priceRange.min.amount)}</span></div><p className="mt-3 min-h-10 text-sm leading-5 text-[#b8ae9f]">{product.description || "Seleção da Corte & Navalha para o seu ritual diário."}</p><button disabled={!variant || !canAddToCart(variant.availableForSale, loading)} onClick={() => variant && addItem(variant.id).catch(() => toast.error("Não foi possível adicionar este item agora."))} className="pressable mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e9e0d0] px-4 py-3 text-xs font-bold text-[#1e1b17] hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"><Plus size={16} />{loading ? "Adicionando..." : variant?.availableForSale ? "Adicionar à bolsa" : "Indisponível"}</button></div></article>;
+}
+
+function Galeria() {
+  const [selected, setSelected] = useState<number | null>(null);
+  const activePhoto = selected === null ? null : editorialGallery[selected];
+  return <main className="mx-auto min-h-[calc(100svh-70px)] max-w-[1280px] px-4 pb-24 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-20"><div className="grid gap-8 border-b border-white/10 pb-9 lg:grid-cols-[.85fr_1.15fr] lg:items-end"><div><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">Galeria Corte & Navalha</p><h1 className="display mt-4 text-[clamp(4rem,9vw,7.5rem)] leading-[.8]">A casa, o corte, o <span className="text-[#d9634c]">detalhe.</span></h1></div><p className="max-w-lg text-sm leading-6 text-[#bdb3a2]">Uma coleção de referências da nossa atmosfera: linhas bem definidas, materiais honestos e um ritual de cuidado que começa na cadeira.</p></div><div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">{editorialGallery.map((photo, index) => <button key={photo.src} onClick={() => setSelected(index)} className={`group relative min-w-0 overflow-hidden rounded-[.8rem] border border-white/10 text-left ${index === 0 || index === 4 ? "col-span-2 aspect-[16/10] md:col-span-2" : "aspect-[4/5]"}`}><img src={photo.src} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12"><p className="text-[9px] font-bold uppercase tracking-[.2em] text-[#e16a53]">{photo.type}</p><p className="display mt-1 text-2xl leading-none text-[#f0eadc]">{photo.title}</p></div></button>)}</div>{activePhoto && <div className="fixed inset-0 z-[60] grid place-items-center p-4 sm:p-8"><button onClick={() => setSelected(null)} aria-label="Fechar foto" className="absolute inset-0 bg-black/85 backdrop-blur-sm" /><div role="dialog" aria-modal="true" aria-label={activePhoto.title} className="relative z-10 max-h-full max-w-3xl overflow-hidden rounded-[.8rem] border border-white/15 bg-[#1c1a17]"><img src={activePhoto.src} alt={activePhoto.title} className="max-h-[78svh] w-full object-contain" /><div className="flex items-center justify-between px-4 py-3"><div><p className="text-[9px] font-bold uppercase tracking-[.2em] text-[#d9634c]">{activePhoto.type}</p><p className="display mt-1 text-2xl leading-none">{activePhoto.title}</p></div><button onClick={() => setSelected(null)} className="pressable grid h-10 w-10 place-items-center rounded-full border border-white/15"><X size={18} /></button></div></div></div>}</main>;
 }
 
 function Loja() {
@@ -139,7 +158,14 @@ function CartDrawer() {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<TabId>("inicio");
-  const navigate = (tab: TabId) => { setActiveTab(tab); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  return <div className="min-h-screen bg-[#161513] text-[#f0eadc]"><Header active={activeTab} onChange={navigate} />{activeTab === "inicio" && <Inicio navigate={navigate} />}{activeTab === "servicos" && <Servicos navigate={navigate} />}{activeTab === "loja" && <Loja />}<footer className="border-t border-white/10 bg-[#12110f] px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-10"><div className="mx-auto flex max-w-[1280px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><Brand /><div className="text-sm leading-6 text-[#928878]"><p>© 2026 Corte & Navalha.</p><p>Técnica, presença e cuidado sem enrolação.</p></div></div></footer><MobileNav active={activeTab} onChange={navigate} /><CartDrawer /></div>;
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    return tab === "servicos" || tab === "galeria" || tab === "loja" ? tab : "inicio";
+  });
+  const navigate = (tab: TabId) => {
+    setActiveTab(tab);
+    window.history.replaceState(null, "", tab === "inicio" ? "/" : `/?tab=${tab}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  return <div className="min-h-screen bg-[#161513] text-[#f0eadc]"><Header active={activeTab} onChange={navigate} />{activeTab === "inicio" && <Inicio navigate={navigate} />}{activeTab === "servicos" && <Servicos navigate={navigate} />}{activeTab === "galeria" && <Galeria />}{activeTab === "loja" && <Loja />}<footer className="border-t border-white/10 bg-[#12110f] px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-10"><div className="mx-auto flex max-w-[1280px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><Brand /><div className="text-sm leading-6 text-[#928878]"><p>© 2026 Corte & Navalha.</p><p>Técnica, presença e cuidado sem enrolação.</p></div></div></footer><MobileNav active={activeTab} onChange={navigate} /><CartDrawer /></div>;
 }

@@ -16,3 +16,9 @@
 - [x] Adicionar endereço/localização real da barbearia e link funcional de rota; substituído por endereço fictício explícito a pedido do usuário para demonstração.
 - [x] Adicionar número de contato/WhatsApp real e conectar os CTAs de reserva/agendamento a links funcionais; substituído por número fictício explícito a pedido do usuário para demonstração.
 - [x] Configurar dados fictícios explícitos de endereço e WhatsApp para demonstrar os fluxos de rota e agendamento.
+- [x] Corrigir a responsividade dos cartões de fotos da página inicial e remover o desnivelamento do cartão central em desktop.
+- [x] Criar uma quarta aba de Galeria com fotos de cortes e do espaço, navegável em mobile e desktop.
+- [x] Adicionar itens e imagens ao catálogo Shopify para ampliar a vitrine de produtos.
+- [x] Validar os novos fluxos, responsividade e catálogo ampliado com testes e screenshots.
+- [x] Permitir abrir as abas Galeria e Loja por link direto para validar e compartilhar seus estados específicos.
+- [x] Validar visualmente as abas Galeria e Loja, incluindo carrosséis, o catálogo de quatro itens e a inclusão de produto no carrinho.
