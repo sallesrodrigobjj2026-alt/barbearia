@@ -19,12 +19,18 @@ import {
   Scissors,
   ShoppingBag,
   Sparkles,
+  ExternalLink,
+  LogIn,
+  LogOut,
+  ShieldCheck,
+  UserRound,
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DEMO_SHOPIFY_ACCOUNT_URL, accountDisplayName, demoOrders, isValidDemoLogin } from "@/lib/demoAccount";
 
-type TabId = "inicio" | "servicos" | "galeria" | "loja";
+type TabId = "inicio" | "servicos" | "galeria" | "loja" | "conta";
 
 const heroImage = "/manus-storage/corte-e-navalha-hero_b322c0e4.jpg";
 const logoImage = "/manus-storage/corte-e-navalha-logo_3c585a61.png";
@@ -74,7 +80,7 @@ function Brand() {
 
 function Header({ active, onChange }: { active: TabId; onChange: (tab: TabId) => void }) {
   const { itemCount, openCart } = useCart();
-  const tabs: Array<[TabId, string]> = [["inicio", "Início"], ["servicos", "Serviços"], ["galeria", "Galeria"], ["loja", "Loja"]];
+  const tabs: Array<[TabId, string]> = [["inicio", "Início"], ["servicos", "Serviços"], ["galeria", "Galeria"], ["loja", "Loja"], ["conta", "Conta"]];
   return (
     <header className="sticky top-0 z-30 border-b border-white/8 bg-[#161513]/90 backdrop-blur-xl">
       <div className="mx-auto flex h-[70px] max-w-[1280px] items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -82,9 +88,7 @@ function Header({ active, onChange }: { active: TabId; onChange: (tab: TabId) =>
         <nav className="hidden rounded-full border border-white/10 bg-white/[.035] p-1 lg:flex" aria-label="Navegação principal">
           {tabs.map(([id, label]) => <button key={id} onClick={() => onChange(id)} className={`pressable rounded-full px-5 py-2 text-xs font-bold uppercase tracking-[.13em] ${active === id ? "bg-[#f0eadc] text-[#1a1815]" : "text-[#b9b09e] hover:text-[#f0eadc]"}`}>{label}</button>)}
         </nav>
-        <button onClick={openCart} className="pressable relative grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-[#1e1c19] text-[#f0eadc] hover:border-[#d9634c]" aria-label={`Abrir carrinho, ${cartLabel(itemCount)}`}>
-          <ShoppingBag size={18} />{itemCount > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#d9634c] px-1 text-[9px] font-bold text-white">{itemCount}</span>}
-        </button>
+        <div className="flex items-center gap-2"><button onClick={() => onChange("conta")} className={`pressable grid h-10 w-10 place-items-center rounded-full border bg-[#1e1c19] ${active === "conta" ? "border-[#d9634c] text-[#e56d54]" : "border-white/15 text-[#f0eadc] hover:border-[#d9634c]"}`} aria-label="Abrir conta"><UserRound size={18} /></button><button onClick={openCart} className="pressable relative grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-[#1e1c19] text-[#f0eadc] hover:border-[#d9634c]" aria-label={`Abrir carrinho, ${cartLabel(itemCount)}`}><ShoppingBag size={18} />{itemCount > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#d9634c] px-1 text-[9px] font-bold text-white">{itemCount}</span>}</button></div>
       </div>
     </header>
   );
@@ -140,6 +144,23 @@ function Galeria() {
   return <main className="mx-auto min-h-[calc(100svh-70px)] max-w-[1280px] px-4 pb-24 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-20"><div className="grid gap-8 border-b border-white/10 pb-9 lg:grid-cols-[.85fr_1.15fr] lg:items-end"><div><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">Galeria Corte & Navalha</p><h1 className="display mt-4 text-[clamp(4rem,9vw,7.5rem)] leading-[.8]">A casa, o corte, o <span className="text-[#d9634c]">detalhe.</span></h1></div><p className="max-w-lg text-sm leading-6 text-[#bdb3a2]">Uma coleção de referências da nossa atmosfera: linhas bem definidas, materiais honestos e um ritual de cuidado que começa na cadeira.</p></div><div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">{editorialGallery.map((photo, index) => <button key={photo.src} onClick={() => setSelected(index)} className={`group relative min-w-0 overflow-hidden rounded-[.8rem] border border-white/10 text-left ${index === 0 || index === 4 ? "col-span-2 aspect-[16/10] md:col-span-2" : "aspect-[4/5]"}`}><img src={photo.src} alt={photo.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12"><p className="text-[9px] font-bold uppercase tracking-[.2em] text-[#e16a53]">{photo.type}</p><p className="display mt-1 text-2xl leading-none text-[#f0eadc]">{photo.title}</p></div></button>)}</div>{activePhoto && <div className="fixed inset-0 z-[60] grid place-items-center p-4 sm:p-8"><button onClick={() => setSelected(null)} aria-label="Fechar foto" className="absolute inset-0 bg-black/85 backdrop-blur-sm" /><div role="dialog" aria-modal="true" aria-label={activePhoto.title} className="relative z-10 max-h-full max-w-3xl overflow-hidden rounded-[.8rem] border border-white/15 bg-[#1c1a17]"><img src={activePhoto.src} alt={activePhoto.title} className="max-h-[78svh] w-full object-contain" /><div className="flex items-center justify-between px-4 py-3"><div><p className="text-[9px] font-bold uppercase tracking-[.2em] text-[#d9634c]">{activePhoto.type}</p><p className="display mt-1 text-2xl leading-none">{activePhoto.title}</p></div><button onClick={() => setSelected(null)} className="pressable grid h-10 w-10 place-items-center rounded-full border border-white/15"><X size={18} /></button></div></div></div>}</main>;
 }
 
+function Conta() {
+  const [email, setEmail] = useState(() => window.localStorage.getItem("demo-account-email") ?? "");
+  const [password, setPassword] = useState("");
+  const [loggedIn, setLoggedIn] = useState(() => Boolean(window.localStorage.getItem("demo-account-email")));
+  const signIn = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!isValidDemoLogin(email, password)) { toast.error("Use um e-mail válido e uma senha com ao menos 6 caracteres."); return; }
+    window.localStorage.setItem("demo-account-email", email.trim());
+    setLoggedIn(true);
+    toast.success("Conta demonstrativa acessada.");
+  };
+  const useDemoAccount = () => { setEmail("cliente@exemplo.com"); setPassword("navalha"); };
+  const signOut = () => { window.localStorage.removeItem("demo-account-email"); setLoggedIn(false); setPassword(""); toast.message("Sessão demonstrativa encerrada."); };
+  if (!loggedIn) return <main className="mx-auto min-h-[calc(100svh-70px)] max-w-[1280px] px-4 pb-24 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-20"><div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-16"><section><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">Minha conta</p><h1 className="display mt-4 text-[clamp(4rem,9vw,7.5rem)] leading-[.8]">Seu pedido. Sua <span className="text-[#d9634c]">conta.</span></h1><p className="mt-6 max-w-md text-sm leading-6 text-[#bdb3a2]">Entre para acessar a demonstração da área de pedidos. O acompanhamento é consultado na conta hospedada pela Shopify.</p><div className="mt-8 border-l border-[#d9634c] pl-4 text-sm leading-6 text-[#aaa091]"><strong className="block text-[#eee5d7]">Ambiente demonstrativo</strong>Este login não cria uma conta real nem guarda senha. Use quaisquer dados válidos ou a conta de demonstração.</div></section><form onSubmit={signIn} className="rounded-[.8rem] border border-white/10 bg-[#201e1a] p-6 sm:p-8"><div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d9634c]/14 text-[#e56d54]"><UserRound size={20} /></div><h2 className="display mt-6 text-4xl leading-none">Acessar conta</h2><p className="mt-2 text-sm leading-6 text-[#afa594]">Use e-mail e senha para liberar a visualização do painel de demonstração.</p><label className="mt-7 block text-[10px] font-bold uppercase tracking-[.16em] text-[#b9af9f]">E-mail<input value={email} onChange={event => setEmail(event.target.value)} type="email" placeholder="voce@exemplo.com" className="mt-2 w-full rounded-xl border border-white/12 bg-black/20 px-4 py-3 text-sm text-[#f0eadc] outline-none placeholder:text-[#6f685e] focus:border-[#d9634c]" /></label><label className="mt-4 block text-[10px] font-bold uppercase tracking-[.16em] text-[#b9af9f]">Senha<input value={password} onChange={event => setPassword(event.target.value)} type="password" placeholder="mínimo de 6 caracteres" className="mt-2 w-full rounded-xl border border-white/12 bg-black/20 px-4 py-3 text-sm text-[#f0eadc] outline-none placeholder:text-[#6f685e] focus:border-[#d9634c]" /></label><button className="pressable mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#d9634c] px-5 py-3.5 text-sm font-bold text-white"><LogIn size={17} />Entrar na demonstração</button><button type="button" onClick={useDemoAccount} className="pressable mt-4 w-full text-xs font-bold uppercase tracking-[.15em] text-[#d7cbb9] underline decoration-[#d9634c] underline-offset-8">Usar conta de demonstração</button></form></div></main>;
+  return <main className="mx-auto min-h-[calc(100svh-70px)] max-w-[1280px] px-4 pb-24 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-20"><div className="flex flex-col gap-6 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.23em] text-[#d9634c]">Minha conta / demonstração</p><h1 className="display mt-4 text-[clamp(4rem,9vw,7.5rem)] leading-[.8]">Olá, <span className="text-[#d9634c]">{accountDisplayName(email)}.</span></h1><p className="mt-5 max-w-lg text-sm leading-6 text-[#bdb3a2]">Veja os seus pedidos de demonstração e consulte o acompanhamento pela conta geral da Shopify.</p></div><button onClick={signOut} className="pressable inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-xs font-bold text-[#d8cebe] hover:border-[#d9634c]"><LogOut size={16} />Sair</button></div><section className="mt-9"><div className="flex items-center gap-3 rounded-[.8rem] border border-[#d9634c]/25 bg-[#d9634c]/8 p-4 text-sm leading-6 text-[#e0d3c3]"><ShieldCheck className="shrink-0 text-[#e56d54]" size={20} /><p><strong>Pedidos fictícios para demonstração.</strong> Não mostramos etapas de entrega internas: a consulta é feita na conta geral da Shopify.</p></div><div className="mt-5 grid gap-4 lg:grid-cols-2">{demoOrders.map(order => <article key={order.id} className="rounded-[.8rem] border border-white/10 bg-[#201e1a] p-6"><div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#d9634c]">Pedido {order.id}</p><h2 className="display mt-2 text-3xl leading-none">{order.total}</h2></div><Package className="text-[#e56d54]" size={22} /></div><p className="mt-5 text-sm leading-6 text-[#c5bbaa]">{order.items}</p><div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-xs text-[#a89e8f]"><span>{order.createdAt}</span><span>Conta Shopify</span></div><a href={DEMO_SHOPIFY_ACCOUNT_URL} target="_blank" rel="noreferrer" className="pressable mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e9e0d0] px-4 py-3 text-xs font-bold text-[#1d1a16] hover:bg-white">Abrir conta Shopify <ExternalLink size={15} /></a></article>)}</div><p className="mt-5 max-w-2xl text-xs leading-5 text-[#887e70]">Na demonstração, todos os botões abrem a conta geral da loja na Shopify. Quando a loja tiver pedidos reais, cada compra poderá direcionar o cliente ao respectivo status individual.</p></section></main>;
+}
+
 function Loja() {
   const input = useMemo(() => ({ first: 6 }), []);
   const { data: products = [], isLoading, isError } = trpc.commerce.products.list.useQuery(input);
@@ -160,12 +181,12 @@ function CartDrawer() {
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabId>(() => {
     const tab = new URLSearchParams(window.location.search).get("tab");
-    return tab === "servicos" || tab === "galeria" || tab === "loja" ? tab : "inicio";
+    return tab === "servicos" || tab === "galeria" || tab === "loja" || tab === "conta" ? tab : "inicio";
   });
   const navigate = (tab: TabId) => {
     setActiveTab(tab);
     window.history.replaceState(null, "", tab === "inicio" ? "/" : `/?tab=${tab}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  return <div className="min-h-screen bg-[#161513] text-[#f0eadc]"><Header active={activeTab} onChange={navigate} />{activeTab === "inicio" && <Inicio navigate={navigate} />}{activeTab === "servicos" && <Servicos navigate={navigate} />}{activeTab === "galeria" && <Galeria />}{activeTab === "loja" && <Loja />}<footer className="border-t border-white/10 bg-[#12110f] px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-10"><div className="mx-auto flex max-w-[1280px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><Brand /><div className="text-sm leading-6 text-[#928878]"><p>© 2026 Corte & Navalha.</p><p>Técnica, presença e cuidado sem enrolação.</p></div></div></footer><MobileNav active={activeTab} onChange={navigate} /><CartDrawer /></div>;
+  return <div className="min-h-screen bg-[#161513] text-[#f0eadc]"><Header active={activeTab} onChange={navigate} />{activeTab === "inicio" && <Inicio navigate={navigate} />}{activeTab === "servicos" && <Servicos navigate={navigate} />}{activeTab === "galeria" && <Galeria />}{activeTab === "loja" && <Loja />}{activeTab === "conta" && <Conta />}<footer className="border-t border-white/10 bg-[#12110f] px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-10"><div className="mx-auto flex max-w-[1280px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><Brand /><div className="text-sm leading-6 text-[#928878]"><p>© 2026 Corte & Navalha.</p><p>Técnica, presença e cuidado sem enrolação.</p></div></div></footer><MobileNav active={activeTab} onChange={navigate} /><CartDrawer /></div>;
 }

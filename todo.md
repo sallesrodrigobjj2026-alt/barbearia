@@ -22,3 +22,11 @@
 - [x] Validar os novos fluxos, responsividade e catálogo ampliado com testes e screenshots.
 - [x] Permitir abrir as abas Galeria e Loja por link direto para validar e compartilhar seus estados específicos.
 - [x] Validar visualmente as abas Galeria e Loja, incluindo carrosséis, o catálogo de quatro itens e a inclusão de produto no carrinho.
+- [x] Definir fluxo de login de cliente e privacidade para a área de pedidos; aplicado como demonstração local, sem senha persistida e sem dados reais de cliente.
+- [x] Criar área autenticada de conta com estado de pedidos e entrega do cliente; implementada como painel demonstrativo de pedidos fictícios.
+- [x] Integrar rastreio de pedidos reais sem expor dados de outros clientes ou fabricar informações de entrega; substituído por redirecionamento para a área de conta Shopify, conforme solicitado.
+- [x] Validar login, acesso protegido e estados de pedido antes da entrega.
+- [x] Criar área de conta demonstrativa com pedidos fictícios claramente identificados.
+- [x] Redirecionar o botão de rastreio de cada pedido ao link de status da Shopify, sem apresentar etapas internas de entrega.
+- [x] Validar explicitamente login inválido, bloqueio do painel sem sessão e retorno aos estados conectado e desconectado.
+- [x] Ajustar o CTA de rastreio para deixar claro que, na demonstração, a abertura direciona para a conta geral da Shopify e não para um status individual de pedido.
